@@ -209,7 +209,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2025-08-24 02:32:40 / Modified: 03:04:35" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
+              <time title="Created: 2025-08-24 02:32:40 / Modified: 03:07:09" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,6 +316,15 @@
 <h3 id="6-첫-포스트-작성"><a href="#6-첫-포스트-작성" class="headerlink" title="6. 첫 포스트 작성"></a>6. 첫 포스트 작성</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;Hello Hexo!&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>파일 위치: <code>source/_posts/Hello-Hexo.md</code></p>
+<p><code>.md</code> 파일 맨 위에 다음처럼 추가:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">&quot;블로그 글&quot;</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2025-08-23 23:40:00</span></span><br><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">DevLog</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">Hexo</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">Notion</span></span><br><span class="line"><span class="attr">toc:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">comments:</span> <span class="literal">true</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="meta"></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>categories</code>: 블로그 분류 (ex: DevLog, Review 등)</li>
+<li><code>tags</code>: 검색용 키워드</li>
+<li><code>toc</code>: 목차 사용 여부</li>
+<li><code>comments</code>: 댓글 허용 여부</li>
+</ul>
 <p>내용 편집 후:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 
