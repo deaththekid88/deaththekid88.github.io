@@ -209,7 +209,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2025-08-24 02:32:40 / Modified: 03:23:12" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
+              <time title="Created: 2025-08-24 02:32:40 / Modified: 03:26:38" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -287,7 +287,7 @@
 
 <hr>
 <h3 id="5-1-추가-기능-optional"><a href="#5-1-추가-기능-optional" class="headerlink" title="5.1 추가 기능 (optional)"></a>5.1 추가 기능 (optional)</h3><p>📝menu 세팅 수정</p>
-<p><code>theme/next/_config.yml</code> 수정:</p>
+<p><code>themes/next/_config.yml</code> 수정:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span></span><br><span class="line">  <span class="attr">about:</span> <span class="string">/about/</span></span><br><span class="line"></span><br><span class="line"><span class="attr">toc:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">number:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">expand_all:</span> <span class="literal">true</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>메뉴에 archive, categories, about을 추가할 경우</p>
@@ -302,20 +302,20 @@
 <p>🔍 검색 기능 (search.json)</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
 
-<p><code>theme/next/_config.yml</code>에 설정 추가:</p>
+<p><code>themes/next/_config.yml</code>에 설정 추가:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br></pre></td></tr></table></figure>
 
 <hr>
 <p>💬 댓글 시스템 (Gitalk)</p>
 <ol>
 <li>GitHub OAuth 앱 등록</li>
-<li><code>theme/next/_config.yml</code>에 설정 추가:</li>
+<li><code>themes/next/_config.yml</code>에 설정 추가:</li>
 </ol>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">gitalk:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">client_id:</span> <span class="string">&lt;your_client_id&gt;</span></span><br><span class="line">  <span class="attr">client_secret:</span> <span class="string">&lt;your_client_secret&gt;</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">&lt;댓글</span> <span class="string">저장용</span> <span class="string">레포&gt;</span></span><br><span class="line">  <span class="attr">owner:</span> <span class="string">&lt;GitHub</span> <span class="string">ID&gt;</span></span><br><span class="line">  <span class="attr">admin:</span> [<span class="string">&lt;GitHub</span> <span class="string">ID&gt;</span>]</span><br></pre></td></tr></table></figure>
 
 <hr>
 <p>📈 조회수 표시 (busuanzi)</p>
-<p><code>theme/next/_config.yml</code>에 설정 추가:</p>
+<p><code>themes/next/_config.yml</code>에 설정 추가:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <hr>
