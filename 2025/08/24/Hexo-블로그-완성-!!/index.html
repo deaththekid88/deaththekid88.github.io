@@ -29,7 +29,7 @@
 <meta property="og:description" content="드디어 Hexo를 이용한 블로그를 만들었습니다 !!읽은 논문이랑 실험 정리하고 포폴로 겸사겸사 쓸 예정입니당 만들고 나니 별거 아닌데 하루종일 만들었어요ㅜㅜ다들 헤매지 말고 한번에 만들라고 공유해보겠습니당 ⚙️ 개발 환경 OS: Windows (WSL2 사용) Node.js: 18 이상 (처음에 12였다가 오류 났음) Hexo: npm install -g">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-08-23T17:32:40.000Z">
-<meta property="article:modified_time" content="2025-08-23T18:26:38.358Z">
+<meta property="article:modified_time" content="2025-08-24T10:10:53.289Z">
 <meta property="article:author" content="deaththekid88">
 <meta property="article:tag" content="Hexo">
 <meta property="article:tag" content="github.io">
@@ -216,7 +216,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2025-08-24 02:32:40 / Modified: 03:26:38" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
+              <time title="Created: 2025-08-24 02:32:40 / Modified: 19:10:53" itemprop="dateCreated datePublished" datetime="2025-08-24T02:32:40+09:00">2025-08-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -331,6 +331,8 @@
 <p>📈 조회수 표시 (busuanzi)</p>
 <p><code>themes/next/_config.yml</code>에 설정 추가:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p><code>themes/next/layout/_partials/head/head.swig</code>의 마지막 줄 위에 설정 추가:<br>(<code>&#123;&#123; next_config() &#125;&#125;</code> 위에 추가)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;script</span> <span class="string">async</span> <span class="string">src=&quot;//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
 
 <hr>
 <h2 id="✏️-글-작성-및-배포"><a href="#✏️-글-작성-및-배포" class="headerlink" title="✏️ 글 작성 및 배포"></a>✏️ 글 작성 및 배포</h2><h3 id="1-글-작성"><a href="#1-글-작성" class="headerlink" title="1. 글 작성"></a>1. 글 작성</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;Hello Hexo!&quot;</span></span><br></pre></td></tr></table></figure>
