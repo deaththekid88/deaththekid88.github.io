@@ -29,9 +29,9 @@
 <meta property="og:description" content="이 정리는 다음 문제를 해결하기 위해 만들어졌다 (with GPT)  수식은 이해하지만 엔진에 적용하면 헷갈린다 로컬 &#x2F; 월드 회전이 뒤섞인다 LookAt, View, Projection이 외워서 쓰는 코드가 된다 column-major &#x2F; row-major 때문에 곱 순서가 헷갈린다  사실 내가 헷갈려서 정리를 했다. 1. 좌표계는 수학">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-01-23T08:00:00.000Z">
-<meta property="article:modified_time" content="2026-01-22T23:28:36.715Z">
+<meta property="article:modified_time" content="2026-01-22T23:47:53.775Z">
 <meta property="article:author" content="deaththekid88">
-<meta property="article:tag" content="transform matrix">
+<meta property="article:tag" content="transform">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://deaththekid88.github.io/2026/01/23/%EC%97%94%EC%A7%84%EC%97%90%EC%84%9C%20Transform%EC%9D%84%20%EC%99%84%EC%A0%84%ED%9E%88%20%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0/">
@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2026-01-23 17:00:00 / Modified: 08:28:36" itemprop="dateCreated datePublished" datetime="2026-01-23T17:00:00+09:00">2026-01-23</time>
+              <time title="Created: 2026-01-23 17:00:00 / Modified: 08:47:53" itemprop="dateCreated datePublished" datetime="2026-01-23T17:00:00+09:00">2026-01-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -348,7 +348,8 @@
 </ul>
 <p>아직 이 점은 <strong>세상과 아무 관계가 없다.</strong></p>
 <hr>
-<h2 id="2️⃣-Local-→-World-World-Matrix"><a href="#2️⃣-Local-→-World-World-Matrix" class="headerlink" title="2️⃣ Local → World (World Matrix)"></a>2️⃣ Local → World (World Matrix)</h2><h3 id="객체-상태"><a href="#객체-상태" class="headerlink" title="객체 상태"></a>객체 상태</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S(Scale)       = (2, 2, 2)</span><br><span class="line">R(Rotation)    = Y축 기준 90도 회전</span><br><span class="line">T(Translation) = (10, 0, 0)</span><br></pre></td></tr></table></figure>
+<h3 id="2️⃣-Local-→-World-World-Matrix"><a href="#2️⃣-Local-→-World-World-Matrix" class="headerlink" title="2️⃣ Local → World (World Matrix)"></a>2️⃣ Local → World (World Matrix)</h3><p>객체 상태</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S(Scale)       = (2, 2, 2)</span><br><span class="line">R(Rotation)    = Y축 기준 90도 회전</span><br><span class="line">T(Translation) = (10, 0, 0)</span><br></pre></td></tr></table></figure>
 
 <p>World Matrix는:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">World = T * R * S</span><br></pre></td></tr></table></figure>
@@ -368,7 +369,8 @@
 
 <p>👉 <strong>이제 이 점은 “세상 좌표”를 갖는다</strong></p>
 <hr>
-<h3 id="💡-여기서-중요한-사실"><a href="#💡-여기서-중요한-사실" class="headerlink" title="💡 여기서 중요한 사실"></a>💡 여기서 중요한 사실</h3><blockquote>
+<p>💡 여기서 중요한 사실</p>
+<blockquote>
 <p>객체가 움직인다는 것은</p>
 <p><strong>World Matrix가 바뀐다는 뜻</strong>이다.</p>
 </blockquote>
@@ -378,11 +380,12 @@
 <li>객체 스케일 → World 변경</li>
 </ul>
 <hr>
-<h2 id="3️⃣-World-→-Camera-View-Matrix"><a href="#3️⃣-World-→-Camera-View-Matrix" class="headerlink" title="3️⃣ World → Camera (View Matrix)"></a>3️⃣ World → Camera (View Matrix)</h2><p>이제 카메라가 이 점을 어떻게 보는지 계산한다.</p>
+<h3 id="3️⃣-World-→-Camera-View-Matrix"><a href="#3️⃣-World-→-Camera-View-Matrix" class="headerlink" title="3️⃣ World → Camera (View Matrix)"></a>3️⃣ World → Camera (View Matrix)</h3><p>이제 카메라가 이 점을 어떻게 보는지 계산한다.</p>
 <p>카메라는 보통 Scale을 쓰지 않는다</p>
 <p>(쓴다면 View가 깨진다)</p>
 <hr>
-<h3 id="카메라-상태"><a href="#카메라-상태" class="headerlink" title="카메라 상태"></a>카메라 상태</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Camera Position = (10, 0, 5)</span><br><span class="line">Camera Rotation = Y축 기준 180도 회전</span><br></pre></td></tr></table></figure>
+<p>카메라 상태</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Camera Position = (10, 0, 5)</span><br><span class="line">Camera Rotation = Y축 기준 180도 회전</span><br></pre></td></tr></table></figure>
 
 <p>Camera World Matrix는:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CameraWorld = T * R</span><br></pre></td></tr></table></figure>
@@ -414,11 +417,14 @@
 </ul>
 <p>👉 <strong>이제 “카메라 눈” 기준 좌표가 됐다</strong></p>
 <hr>
-<h3 id="💡-객체-이동-vs-카메라-이동-차이-중요"><a href="#💡-객체-이동-vs-카메라-이동-차이-중요" class="headerlink" title="💡 객체 이동 vs 카메라 이동 차이 (중요)"></a>💡 객체 이동 vs 카메라 이동 차이 (중요)</h3><h3 id="객체가-움직일-때"><a href="#객체가-움직일-때" class="headerlink" title="객체가 움직일 때"></a>객체가 움직일 때</h3><ul>
+<p>💡 객체 이동 vs 카메라 이동 차이 (중요)</p>
+<p><strong>객체가 움직일 때</strong></p>
+<ul>
 <li>World Matrix가 변함</li>
 <li>View는 그대로</li>
 </ul>
-<h3 id="카메라가-움직일-때"><a href="#카메라가-움직일-때" class="headerlink" title="카메라가 움직일 때"></a>카메라가 움직일 때</h3><ul>
+<p><strong>카메라가 움직일 때</strong></p>
+<ul>
 <li>View Matrix가 변함</li>
 <li>World는 그대로</li>
 </ul>
@@ -428,9 +434,9 @@
 </blockquote>
 <p>이 문장을 여기서 체감하게 된다.</p>
 <hr>
-<h2 id="4️⃣-Camera-→-Projection-Projection-Matrix"><a href="#4️⃣-Camera-→-Projection-Projection-Matrix" class="headerlink" title="4️⃣ Camera → Projection (Projection Matrix)"></a>4️⃣ Camera → Projection (Projection Matrix)</h2><p>이제 3D 점을 <strong>카메라 평면 위로 찌그러뜨린다.</strong></p>
-<hr>
-<h3 id="Projection-설정"><a href="#Projection-설정" class="headerlink" title="Projection 설정"></a>Projection 설정</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FOV = 90°</span><br><span class="line">Aspect = 1</span><br><span class="line">Near = 1</span><br><span class="line">Far = 100</span><br></pre></td></tr></table></figure>
+<h3 id="4️⃣-Camera-→-Projection-Projection-Matrix"><a href="#4️⃣-Camera-→-Projection-Projection-Matrix" class="headerlink" title="4️⃣ Camera → Projection (Projection Matrix)"></a>4️⃣ Camera → Projection (Projection Matrix)</h3><p>이제 3D 점을 <strong>카메라 평면 위로 찌그러뜨린다.</strong></p>
+<p>Projection 설정</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FOV = 90°</span><br><span class="line">Aspect = 1</span><br><span class="line">Near = 1</span><br><span class="line">Far = 100</span><br></pre></td></tr></table></figure>
 
 <p>Projection Matrix는:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Projection = Perspective(...)</span><br></pre></td></tr></table></figure>
@@ -444,7 +450,7 @@
 <li><strong>동차 좌표(clip space)</strong> 상태</li>
 </ul>
 <hr>
-<h2 id="5️⃣-Clip-→-NDC-Normalized-Device-Coordinates"><a href="#5️⃣-Clip-→-NDC-Normalized-Device-Coordinates" class="headerlink" title="5️⃣ Clip → NDC (Normalized Device Coordinates)"></a>5️⃣ Clip → NDC (Normalized Device Coordinates)</h2><p>GPU는 자동으로 이 작업을 한다.</p>
+<h3 id="5️⃣-Clip-→-NDC-Normalized-Device-Coordinates"><a href="#5️⃣-Clip-→-NDC-Normalized-Device-Coordinates" class="headerlink" title="5️⃣ Clip → NDC (Normalized Device Coordinates)"></a>5️⃣ Clip → NDC (Normalized Device Coordinates)</h3><p>GPU는 자동으로 이 작업을 한다.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndcPos = clipPos / w</span><br></pre></td></tr></table></figure>
 
 <p>결과는:</p>
@@ -458,7 +464,7 @@
 </ul>
 <p>👉 <strong>이 단계부터 해상도와 무관한 좌표</strong></p>
 <hr>
-<h2 id="6️⃣-NDC-→-모니터-Screen-Space"><a href="#6️⃣-NDC-→-모니터-Screen-Space" class="headerlink" title="6️⃣ NDC → 모니터(Screen Space)"></a>6️⃣ NDC → 모니터(Screen Space)</h2><p>마지막으로 뷰포트 변환이 일어난다.</p>
+<h3 id="6️⃣-NDC-→-모니터-Screen-Space"><a href="#6️⃣-NDC-→-모니터-Screen-Space" class="headerlink" title="6️⃣ NDC → 모니터(Screen Space)"></a>6️⃣ NDC → 모니터(Screen Space)</h3><p>마지막으로 뷰포트 변환이 일어난다.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">screenX = (ndc.x * 0.5 + 0.5) * screenWidth</span><br><span class="line">screenY = (ndc.y * 0.5 + 0.5) * screenHeight</span><br></pre></td></tr></table></figure>
 
 <p>예를 들어:</p>
@@ -466,7 +472,8 @@
 
 <p>👉 <strong>진짜 픽셀 좌표가 된다</strong></p>
 <hr>
-<h2 id="🔁-객체가-움직일-때-vs-카메라가-움직일-때-정리"><a href="#🔁-객체가-움직일-때-vs-카메라가-움직일-때-정리" class="headerlink" title="🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)"></a>🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)</h2><h3 id="객체-이동-예시"><a href="#객체-이동-예시" class="headerlink" title="객체 이동 예시"></a>객체 이동 예시</h3><ul>
+<h3 id="🔁-객체가-움직일-때-vs-카메라가-움직일-때-정리"><a href="#🔁-객체가-움직일-때-vs-카메라가-움직일-때-정리" class="headerlink" title="🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)"></a>🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)</h3><p><strong>객체 이동 예시</strong></p>
+<ul>
 <li>local → world 값이 변함<br>world → camera 값도 변함</li>
 <li>View, Projection 그대로</li>
 </ul>
@@ -478,7 +485,8 @@
 <p><strong>World Matrix 변경</strong></p>
 </blockquote>
 <hr>
-<h3 id="카메라-이동-예시"><a href="#카메라-이동-예시" class="headerlink" title="카메라 이동 예시"></a>카메라 이동 예시</h3><ul>
+<p><strong>카메라 이동 예시</strong></p>
+<ul>
 <li>world → camera 값이 변함<br>local → world는 그대로</li>
 <li>View가 inverse로 다시 계산됨</li>
 </ul>
@@ -490,7 +498,8 @@
 <p><strong>View Matrix 변경</strong></p>
 </blockquote>
 <hr>
-<h3 id="중요한-통찰"><a href="#중요한-통찰" class="headerlink" title="중요한 통찰"></a>중요한 통찰</h3><blockquote>
+<p><strong>중요한 통찰</strong></p>
+<blockquote>
 <p>❗ 엔진은 “누가 움직였는지”를 신경 쓰지 않는다</p>
 <p>그저</p>
 <ul>
@@ -568,7 +577,8 @@
 <li>회전 상태는 Quaternion으로 저장한다</li>
 </ul>
 <hr>
-<h3 id="왜-Quaternion을-쓰는가"><a href="#왜-Quaternion을-쓰는가" class="headerlink" title="왜 Quaternion을 쓰는가"></a>왜 Quaternion을 쓰는가</h3><p>매트릭스 기반 회전의 문제:</p>
+<p><strong>왜 Quaternion을 쓰는가</strong></p>
+<p>매트릭스 기반 회전의 문제:</p>
 <ul>
 <li>로컬 축이 계속 변한다</li>
 <li>각도 누적이 깨진다</li>
@@ -647,7 +657,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/transform-matrix/" rel="tag"><i class="fa fa-tag"></i> transform matrix</a>
+              <a href="/tags/transform/" rel="tag"><i class="fa fa-tag"></i> transform</a>
           </div>
 
         
@@ -719,7 +729,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%EC%A2%8C%ED%91%9C%EA%B3%84%EB%8A%94-%EC%88%98%ED%95%99%EC%9D%B4-%EC%95%84%EB%8B%88%EB%9D%BC-%EC%97%94%EC%A7%84%EC%9D%98-%EC%84%B8%EA%B3%84%EA%B4%80%EC%9D%B4%EB%8B%A4"><span class="nav-text">1. 좌표계는 수학이 아니라 엔진의 세계관이다</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Transform%EC%9D%98-%EB%B3%B8%EC%A7%88-%EA%B3%B5%EA%B0%84%EC%9D%84-%EB%B0%94%EA%BE%B8%EB%8A%94-%EC%9D%BC"><span class="nav-text">2. Transform의 본질: 공간을 바꾸는 일</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#World-Matrix"><span class="nav-text">World Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Matrix"><span class="nav-text">View Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Projection-Matrix"><span class="nav-text">Projection Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%9D%B4%EB%8F%99%EA%B3%BC-%ED%9A%8C%EC%A0%84"><span class="nav-text">이동과 회전</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%98%88%EC%A0%9C-%EC%83%81%ED%99%A9-%EC%84%A4%EC%A0%95"><span class="nav-text">예제 상황 설정</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1%EF%B8%8F%E2%83%A3-%EB%AA%A8%EB%8D%B8-Local-%EC%A2%8C%ED%91%9C"><span class="nav-text">1️⃣ 모델(Local) 좌표</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%EF%B8%8F%E2%83%A3-Local-%E2%86%92-World-World-Matrix"><span class="nav-text">2️⃣ Local → World (World Matrix)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B0%9D%EC%B2%B4-%EC%83%81%ED%83%9C"><span class="nav-text">객체 상태</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%92%A1-%EC%97%AC%EA%B8%B0%EC%84%9C-%EC%A4%91%EC%9A%94%ED%95%9C-%EC%82%AC%EC%8B%A4"><span class="nav-text">💡 여기서 중요한 사실</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%EF%B8%8F%E2%83%A3-World-%E2%86%92-Camera-View-Matrix"><span class="nav-text">3️⃣ World → Camera (View Matrix)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%B9%B4%EB%A9%94%EB%9D%BC-%EC%83%81%ED%83%9C"><span class="nav-text">카메라 상태</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%92%A1-%EA%B0%9D%EC%B2%B4-%EC%9D%B4%EB%8F%99-vs-%EC%B9%B4%EB%A9%94%EB%9D%BC-%EC%9D%B4%EB%8F%99-%EC%B0%A8%EC%9D%B4-%EC%A4%91%EC%9A%94"><span class="nav-text">💡 객체 이동 vs 카메라 이동 차이 (중요)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B0%9D%EC%B2%B4%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C"><span class="nav-text">객체가 움직일 때</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%B9%B4%EB%A9%94%EB%9D%BC%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C"><span class="nav-text">카메라가 움직일 때</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%EF%B8%8F%E2%83%A3-Camera-%E2%86%92-Projection-Projection-Matrix"><span class="nav-text">4️⃣ Camera → Projection (Projection Matrix)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Projection-%EC%84%A4%EC%A0%95"><span class="nav-text">Projection 설정</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%EF%B8%8F%E2%83%A3-Clip-%E2%86%92-NDC-Normalized-Device-Coordinates"><span class="nav-text">5️⃣ Clip → NDC (Normalized Device Coordinates)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6%EF%B8%8F%E2%83%A3-NDC-%E2%86%92-%EB%AA%A8%EB%8B%88%ED%84%B0-Screen-Space"><span class="nav-text">6️⃣ NDC → 모니터(Screen Space)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%81-%EA%B0%9D%EC%B2%B4%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C-vs-%EC%B9%B4%EB%A9%94%EB%9D%BC%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C-%EC%A0%95%EB%A6%AC"><span class="nav-text">🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B0%9D%EC%B2%B4-%EC%9D%B4%EB%8F%99-%EC%98%88%EC%8B%9C"><span class="nav-text">객체 이동 예시</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%B9%B4%EB%A9%94%EB%9D%BC-%EC%9D%B4%EB%8F%99-%EC%98%88%EC%8B%9C"><span class="nav-text">카메라 이동 예시</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%A4%91%EC%9A%94%ED%95%9C-%ED%86%B5%EC%B0%B0"><span class="nav-text">중요한 통찰</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-LookAt%EC%9D%98-%EB%B3%B8%EC%A7%88"><span class="nav-text">3. LookAt의 본질</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Column-major-Row-major%EC%9D%98-%EC%98%AC%EB%B0%94%EB%A5%B8-%EC%9D%B4%ED%95%B4"><span class="nav-text">4. Column-major &#x2F; Row-major의 올바른 이해</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%EA%B0%81%EB%8F%84-angle-%EB%8A%94-%EA%B2%B0%EA%B3%BC%EB%AC%BC%EC%9D%B4%EB%8B%A4"><span class="nav-text">5. 각도(angle)는 결과물이다</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%99%9C-Quaternion%EC%9D%84-%EC%93%B0%EB%8A%94%EA%B0%80"><span class="nav-text">왜 Quaternion을 쓰는가</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%EB%A7%88%EB%AC%B4%EB%A6%AC-%EC%9A%94%EC%95%BD"><span class="nav-text">6. 마무리 요약</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%EC%A2%8C%ED%91%9C%EA%B3%84%EB%8A%94-%EC%88%98%ED%95%99%EC%9D%B4-%EC%95%84%EB%8B%88%EB%9D%BC-%EC%97%94%EC%A7%84%EC%9D%98-%EC%84%B8%EA%B3%84%EA%B4%80%EC%9D%B4%EB%8B%A4"><span class="nav-text">1. 좌표계는 수학이 아니라 엔진의 세계관이다</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Transform%EC%9D%98-%EB%B3%B8%EC%A7%88-%EA%B3%B5%EA%B0%84%EC%9D%84-%EB%B0%94%EA%BE%B8%EB%8A%94-%EC%9D%BC"><span class="nav-text">2. Transform의 본질: 공간을 바꾸는 일</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#World-Matrix"><span class="nav-text">World Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Matrix"><span class="nav-text">View Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Projection-Matrix"><span class="nav-text">Projection Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%9D%B4%EB%8F%99%EA%B3%BC-%ED%9A%8C%EC%A0%84"><span class="nav-text">이동과 회전</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%98%88%EC%A0%9C-%EC%83%81%ED%99%A9-%EC%84%A4%EC%A0%95"><span class="nav-text">예제 상황 설정</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1%EF%B8%8F%E2%83%A3-%EB%AA%A8%EB%8D%B8-Local-%EC%A2%8C%ED%91%9C"><span class="nav-text">1️⃣ 모델(Local) 좌표</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%EF%B8%8F%E2%83%A3-Local-%E2%86%92-World-World-Matrix"><span class="nav-text">2️⃣ Local → World (World Matrix)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%EF%B8%8F%E2%83%A3-World-%E2%86%92-Camera-View-Matrix"><span class="nav-text">3️⃣ World → Camera (View Matrix)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%EF%B8%8F%E2%83%A3-Camera-%E2%86%92-Projection-Projection-Matrix"><span class="nav-text">4️⃣ Camera → Projection (Projection Matrix)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%EF%B8%8F%E2%83%A3-Clip-%E2%86%92-NDC-Normalized-Device-Coordinates"><span class="nav-text">5️⃣ Clip → NDC (Normalized Device Coordinates)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%EF%B8%8F%E2%83%A3-NDC-%E2%86%92-%EB%AA%A8%EB%8B%88%ED%84%B0-Screen-Space"><span class="nav-text">6️⃣ NDC → 모니터(Screen Space)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%81-%EA%B0%9D%EC%B2%B4%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C-vs-%EC%B9%B4%EB%A9%94%EB%9D%BC%EA%B0%80-%EC%9B%80%EC%A7%81%EC%9D%BC-%EB%95%8C-%EC%A0%95%EB%A6%AC"><span class="nav-text">🔁 객체가 움직일 때 vs 카메라가 움직일 때 (정리)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-LookAt%EC%9D%98-%EB%B3%B8%EC%A7%88"><span class="nav-text">3. LookAt의 본질</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Column-major-Row-major%EC%9D%98-%EC%98%AC%EB%B0%94%EB%A5%B8-%EC%9D%B4%ED%95%B4"><span class="nav-text">4. Column-major &#x2F; Row-major의 올바른 이해</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%EA%B0%81%EB%8F%84-angle-%EB%8A%94-%EA%B2%B0%EA%B3%BC%EB%AC%BC%EC%9D%B4%EB%8B%A4"><span class="nav-text">5. 각도(angle)는 결과물이다</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%EB%A7%88%EB%AC%B4%EB%A6%AC-%EC%9A%94%EC%95%BD"><span class="nav-text">6. 마무리 요약</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
