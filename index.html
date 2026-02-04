@@ -210,7 +210,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2026-02-05 01:53:40 / Modified: 01:53:56" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
+              <time title="Created: 2026-02-05 01:53:40 / Modified: 02:01:57" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -416,8 +416,7 @@
 <h3 id="5-이-구조로-Headless-엔진-만들기"><a href="#5-이-구조로-Headless-엔진-만들기" class="headerlink" title="5. 이 구조로 Headless 엔진 만들기"></a>5. 이 구조로 Headless 엔진 만들기</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">HeadlessPlatform</span> : <span class="title">Platform</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">PollEvents</span>()</span> &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SwapBuffers</span>()</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> ShouldClose =&gt; <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">//Headless 환경에서는 OS 종료 이벤트가 없으므로 종료 조건은 엔진 외부에서 제어한다.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Vector2 <span class="title">GetFramebufferSize</span>()</span> =&gt; Vector2.Zero;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Vector2 <span class="title">GetWindowSize</span>()</span> =&gt; Vector2.Zero;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> InputState <span class="title">GetInputState</span>()</span> =&gt; InputState.Empty;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">double</span> <span class="title">GetRawTimeSeconds</span>()</span> =&gt; stopwatch.Elapsed.TotalSeconds;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//실행</span></span><br><span class="line">engine.Run(<span class="keyword">new</span> HeadlessPlatform());</span><br></pre></td></tr></table></figure>
 
 <p>이렇게 하면 시뮬레이션 엔진이 된다.</p>
-<p>그렇지만 이 구조를 게임에도 사용할 수 있다.</p>
-<p>게임과 시뮬레이션 모두 엔진이 하는 일은 동일하다.</p>
+<h3 id="6-이-구조로-게임-만들기"><a href="#6-이-구조로-게임-만들기" class="headerlink" title="6. 이 구조로 게임 만들기"></a>6. 이 구조로 게임 만들기</h3><p>게임과 시뮬레이션 모두 엔진이 하는 일은 동일하다.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">입력 → 상태 변화 → 결과표현</span><br></pre></td></tr></table></figure>
 
 <p>이 흐름은 동일하지만, 차이는 </p>
