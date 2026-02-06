@@ -29,7 +29,7 @@
 <meta property="og:description" content="엔진 제작에 있어 platform 레이어는 단순한 윈도우 창 띄우기가 아니다. 핵심은 누가 죽도권을 갖느냐와 환경이 바뀌어도 엔진의 로직이 변하지 않게 추상화하는가에 있다. 이 글은 **엔진 주도 루프(Engine-Owned Loop)**를 기준으로 작성했다..!많은 프레임워크가 OS의 메시지 루프에 엔진을 종속시키지만(Event-Driven), 확장성을">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-02-04T16:53:40.000Z">
-<meta property="article:modified_time" content="2026-02-05T06:41:35.691Z">
+<meta property="article:modified_time" content="2026-02-06T10:36:58.711Z">
 <meta property="article:author" content="deaththekid88">
 <meta property="article:tag" content="platform">
 <meta name="twitter:card" content="summary">
@@ -213,10 +213,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2026-02-05 01:53:40 / Modified: 15:41:35" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
+              <time title="Created: 2026-02-05 01:53:40" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2026-02-06 19:36:58" itemprop="dateModified" datetime="2026-02-06T19:36:58+09:00">2026-02-06</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -275,6 +281,7 @@
 <p>프레임 경계가 명확하고 입력&#x2F;시간&#x2F;렌더가 완전히 분리가 된다.</p>
 <p>이렇게 하면 테스트가 가능하고 서버가 가능하다.</p>
 <p>그럼 게임 뿐만아니라 다른 시뮬레이션 엔진으로도 활용이 가능하게 된다.</p>
+<hr>
 <p>이제 책임을 나누면 구조가 뚜렷해진다.</p>
 <ul>
 <li>Platform 책임<ul>
@@ -301,6 +308,7 @@
 </ul>
 </li>
 </ul>
+<hr>
 <h3 id="1-엔진은-언제-입력-InputState-을-알아야-할까"><a href="#1-엔진은-언제-입력-InputState-을-알아야-할까" class="headerlink" title="1. 엔진은 언제 입력(InputState)을 알아야 할까 ?"></a><strong>1. 엔진은 언제 입력(InputState)을 알아야 할까 ?</strong></h3><p>바로 프레임의 시작 시점이다.</p>
 <p>InputState는 한 프레임동안 유효한 입력의 스냅샷이다.</p>
 <p>InputState의 최소 구성은</p>
@@ -309,13 +317,14 @@
 <li>마우스 버튼 상태</li>
 <li>마우스 위치</li>
 <li>마우스 이동량</li>
-<li>휠 스크롤</li>
+<li>휠 스크롤..</li>
 </ul>
+<hr>
 <p>Platform 내부에는 반드시 buffer가 존재한다.</p>
 <p>Platform이 엔진에게 곧바로 <code>InputState</code>를 만들어서 전달하는 구조는</p>
 <p>겉보기에는 단순하지만, 실제로는 <strong>프레임 경계를 깨뜨리는 설계</strong>다.</p>
 <p>PollEvents() 중에 입력을 즉시 처리하면 프레임 중간에 데이터가 변해 로직의 일관성이 깨질 수도 있다.</p>
-<p>그래서 <strong>이벤트 수집</strong>과 <strong>상태 스냅샷</strong>을 분리해야한다.</p>
+<p>그래서 **이벤트 수집(InputBuffer)**과 **상태 스냅샷(InputState)**을 분리해야한다.</p>
 <p>그래서 Platform 내부에는 반드시 다음 계층이 존재한다.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">OS / GLFW Event</span><br><span class="line">      ↓</span><br><span class="line">InputBuffer (mutable, platform-<span class="keyword">internal</span>)</span><br><span class="line">      ↓   (Frame Boundary)</span><br><span class="line">InputState (immutable snapshot)</span><br><span class="line">      ↓</span><br><span class="line">Engine</span><br></pre></td></tr></table></figure>
 
@@ -342,9 +351,9 @@
 </ul>
   <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> InputState <span class="title">GetInputState</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> keys = <span class="keyword">new</span> KeyState[(<span class="built_in">int</span>)Key.Count];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; keys.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (buffer.KeyDown[i] &amp;&amp; !buffer.KeyPrev[i])</span><br><span class="line">            keys[i] = KeyState.Pressed;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!buffer.KeyDown[i] &amp;&amp; buffer.KeyPrev[i])</span><br><span class="line">            keys[i] = KeyState.Released;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (buffer.KeyDown[i])</span><br><span class="line">            keys[i] = KeyState.Down;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            keys[i] = KeyState.Up;</span><br><span class="line"></span><br><span class="line">        buffer.KeyPrev[i] = buffer.KeyDown[i];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> InputState(</span><br><span class="line">        keys,</span><br><span class="line">        buffer.MousePosition,</span><br><span class="line">        buffer.MouseDelta,</span><br><span class="line">        buffer.WheelDelta</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
-<p>이 구조 덕분에 엔진은</p>
-<p><strong>언제 입력을 읽어야 하는지</strong> 를 명확히 정의할 수 있다.<br>엔진은 입력을 <strong>프레임의 시작 시점</strong>에만 알아야 한다.</p>
-<h3 id="2-PollEvents는-정확히-무엇을-하는가"><a href="#2-PollEvents는-정확히-무엇을-하는가" class="headerlink" title="2. PollEvents는 정확히 무엇을 하는가"></a>2. PollEvents는 정확히 무엇을 하는가</h3><p>많은 사람들이 PollEvents()를 업데이트 함수처럼 오해한다.</p>
+<p>이 구조 덕분에 엔진은 <strong>언제 입력을 읽어야 하는지</strong> 를 명확히 정의할 수 있다.<br>엔진은 입력을 <strong>프레임의 시작 시점</strong>에만 알아야 한다.</p>
+<hr>
+<h3 id="2-PollEvents는-정확히-무엇을-할까"><a href="#2-PollEvents는-정확히-무엇을-할까" class="headerlink" title="2. PollEvents는 정확히 무엇을 할까?"></a>2. PollEvents는 정확히 무엇을 할까?</h3><p>많은 사람들이 PollEvents()를 업데이트 함수처럼 오해한다.</p>
 <p>하지만 이 함수의 실제 의미는 훨씬 제한적이다.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">platform.PollEvents();</span><br></pre></td></tr></table></figure>
 
@@ -356,7 +365,7 @@
 </ul>
 <p><strong>여기서 절대 InputState를 생성하면 안된다</strong></p>
 <p>왜 PollEvents에서 InputState를 만들면 안 되냐면</p>
-<p>OS 이벤트는 <strong>비동기적</strong>이다.</p>
+<p>OS 이벤트는 <strong>비동기적</strong>이기 때문이다.</p>
 <ul>
 <li>키 입력은 언제 올지 모른다</li>
 <li>마우스 이동은 프레임 중간에도 발생한다</li>
@@ -370,9 +379,7 @@
 <p>이건 버그가 아니라 <strong>설계 실패</strong>다.</p>
 <p>그래서 InputState는 반드시:</p>
 <p><strong>프레임 경계(Frame Boundary)에서 단 한 번만 생성되어야 한다.</strong></p>
-<p>다시 말해</p>
-<p><code>PollEvents</code> 중에 입력을 즉시 처리하면 프레임 중간에 데이터가 변해 로직의 일관성이 깨질 수 있다. </p>
-<p>따라서 **이벤트 수집(Poll)**과 **상태 스냅샷(GetState)**을 분리해야 한다</p>
+<hr>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Platform</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> InputBuffer _buffer = <span class="keyword">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">PollEvents</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// OS 메시지 루프</span></span><br><span class="line">        <span class="keyword">while</span> (PeekMessage(<span class="keyword">out</span> msg)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (msg == WM_MOUSEMOVE) &#123;</span><br><span class="line">                <span class="comment">// 프레임 내 발생하는 모든 마우스 이동량을 누적(Accumulate)</span></span><br><span class="line">                _buffer.MouseDeltaAccumulator += GetDelta(msg);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// ... 키보드 상태 업데이트</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> InputState <span class="title">GetInputState</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 현재 시점의 완성된 스냅샷 생성</span></span><br><span class="line">        <span class="keyword">var</span> state = <span class="keyword">new</span> InputState(_buffer);</span><br><span class="line">        <span class="comment">// 다음 프레임을 위해 누적값 초기화 및 이전 키 상태 보관</span></span><br><span class="line">        _buffer.PrepareNextFrame(); </span><br><span class="line">        <span class="keyword">return</span> state;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>GetInputState에서</p>
@@ -385,6 +392,7 @@
 <p>을 해야한다.</p>
 <p>이 시점 이후에 프레임의 입력이 확정된다.</p>
 <p>Engine에서 보는 입력은 이 InputState하나뿐이다.</p>
+<hr>
 <h3 id="3-SwapBuffers는-무엇인가"><a href="#3-SwapBuffers는-무엇인가" class="headerlink" title="3. SwapBuffers는 무엇인가"></a>3. SwapBuffers는 무엇인가</h3><p>InputState가 프레임의 시작을 고정한다면</p>
 <p>SwapBuffers는 프레임의 끝을 확정한다.</p>
 <p>즉, 이번 프레임 결과를 화면에 보이겠다는 의미다.</p>
@@ -402,11 +410,12 @@
 </ul>
 <p>SwapBuffers는 Vsync off일 경우 GPU 명령 완료 여부는 신경 안써도 된다.</p>
 <p>근데 Vsync를 켜면 SwapBuffers에서 블록 될 수 있다 ( 프레임 페이싱&#x2F;입력 지연 영향)</p>
-<p>대부분의 백엔드에서 Present는 블록될 수 있으며, 엔진은 이를 <strong>Render thread로 격리</strong>하거나 <strong>프레임 큐로 흡수</strong>해야 한다</p>
+<p>대부분의 백엔드에서 SwapBuffers는 블록될 수 있으며, 엔진은 이를 <strong>Render thread로 격리</strong>하거나 <strong>프레임 큐로 흡수</strong>해야 한다</p>
 <ul>
 <li>Vulkan&#x2F;D3D12&#x2F;Metal은 Present가 <strong>큐&#x2F;펜스&#x2F;세마포어와 강하게 결합</strong>되어 있다.</li>
 <li>OpenGL도 내부 동기화를 걸면 신경써야한다.</li>
 </ul>
+<hr>
 <h3 id="4-정리를-해보자면"><a href="#4-정리를-해보자면" class="headerlink" title="4. 정리를 해보자면"></a>4. 정리를 해보자면</h3><p><strong>엔진루프 관점</strong>에선 (메인루프 설계)</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Frame Start</span>]</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> platform.PollEvents()</span><br><span class="line">   - OS 이벤트 펌프</span><br><span class="line">   - GLFW 콜백 실행</span><br><span class="line">   - InputBuffer 갱신 (mutable)</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> inputState = platform.GetInputState()</span><br><span class="line">   - InputBuffer → InputState snapshot</span><br><span class="line">   - 이 시점 이후 InputState는 불변</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> engine.Update(inputState)</span><br><span class="line">   - 모든 시스템이 동일한 입력 스냅샷 사용</span><br><span class="line"></span><br><span class="line"><span class="number">4.</span> engine.Render()</span><br><span class="line">   - Back Buffer에 그림</span><br><span class="line"></span><br><span class="line"><span class="number">5.</span> platform.SwapBuffers()</span><br><span class="line">   -  Double / Triple buffer 교환</span><br><span class="line"></span><br><span class="line">[<span class="meta">Frame End</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -439,10 +448,12 @@
 <p>둘을 연결하면</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (app.IsRunning &amp;&amp; !platform.ShouldClose)</span><br><span class="line">&#123;</span><br><span class="line">    platform.PollEvents();              <span class="comment">// ① 수집</span></span><br><span class="line">    InputState input = platform.GetInputState(); <span class="comment">// ② 스냅샷</span></span><br><span class="line"></span><br><span class="line">    engine.Update(input);               <span class="comment">// ③ 로직</span></span><br><span class="line">    engine.Render();                    <span class="comment">// ④ 그리기</span></span><br><span class="line"></span><br><span class="line">    platform.SwapBuffers();             <span class="comment">// ⑤ 제출</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<hr>
 <h3 id="5-이-구조로-Headless-엔진-만들기"><a href="#5-이-구조로-Headless-엔진-만들기" class="headerlink" title="5. 이 구조로 Headless 엔진 만들기"></a>5. 이 구조로 Headless 엔진 만들기</h3><p>그래픽 카드가 없는 서버환경이나 유닛 테스트 환경을 위해 HeadlessPlatform을 준비해야한다.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">HeadlessPlatform</span> : <span class="title">Platform</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">PollEvents</span>()</span> &#123; <span class="comment">/* 서버는 윈도우 메시지가 없음 */</span> &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SwapBuffers</span>()</span> &#123; <span class="comment">/* 출력 장치가 없으므로 생략 */</span> &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> ShouldClose =&gt; <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">//Headless 환경에서는 OS 종료 이벤트가 없으므로 종료 조건은 엔진 외부에서 제어한다.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Vector2 <span class="title">GetFramebufferSize</span>()</span> =&gt; Vector2.Zero;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Vector2 <span class="title">GetWindowSize</span>()</span> =&gt; Vector2.Zero;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> InputState <span class="title">GetInputState</span>()</span> =&gt; InputState.Empty;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">double</span> <span class="title">GetRawTimeSeconds</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 실제 시간 대신 고정된 타임스텝(Fixed Step)을 반환하여 </span></span><br><span class="line">        <span class="comment">// 결정론적(Deterministic) 시뮬레이션을 보장할 수 있음</span></span><br><span class="line">        <span class="keyword">return</span> _virtualTime += <span class="number">0.01667</span>; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//실행</span></span><br><span class="line">engine.Run(<span class="keyword">new</span> HeadlessPlatform());</span><br></pre></td></tr></table></figure>
 
 <p>이렇게 하면 시뮬레이션 엔진이 된다.</p>
+<hr>
 <h3 id="6-이-구조로-게임-만들기"><a href="#6-이-구조로-게임-만들기" class="headerlink" title="6. 이 구조로 게임 만들기"></a>6. 이 구조로 게임 만들기</h3><p>이 구조를 게임에도 사용할 수 있다.</p>
 <p>게임과 시뮬레이션 모두 엔진이 하는 일은 동일하다.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">입력 → 상태 변화 → 결과표현</span><br></pre></td></tr></table></figure>
@@ -491,6 +502,7 @@
 <li>Animation Blending</li>
 <li>UI Renderer</li>
 </ul>
+<hr>
 <p>이러한 입력 구조는 게임에 더 유리하다</p>
 <p>게임에서 가장 흔한 버그 중 하나는 이것이다.</p>
 <ul>
@@ -514,8 +526,10 @@
 </ul>
 <p>이 전부가 <strong>동일한 입력을 기준으로 동작</strong>한다.</p>
 <p>이건 게임에서 굉장히 큰 안정성을 준다.</p>
+<hr>
 <p>그리고 Fixed Timestep + Interpolation 구조는 게임에서도 더 안전하다.</p>
 <p>Interpolation으로 시각적 표현을 부드럽게 해줬기 때문이다.</p>
+<hr>
 <p>또한 현재 구조는 입력 스냅샷이 명확하고 시간 흐름이 결정론 적이고 플랫폼 의존성이 제거되어있다.</p>
 <p>그래서 자연스럽게 싱글플레이&#x2F;멀티플레이&#x2F;리플레이 구조로 이어진다.</p>
 <ul>
@@ -525,6 +539,7 @@
 <li>클라이언트 → 시각화 전용</li>
 </ul>
 <p>따라서 이 구조는 로컬게임→온라인게임 으로 확장 가능한 구조이다.</p>
+<hr>
 <h3 id="8-결론-및-요약"><a href="#8-결론-및-요약" class="headerlink" title="8. 결론 및 요약"></a>8. 결론 및 요약</h3><p>플랫폼 설계의 핵심은 엔진을 외부 환경으로부터 고립시키는 것이다</p>
 <ol>
 <li><strong>엔진이 루프를 소유</strong>하여 실행 흐름을 통제</li>
@@ -532,6 +547,7 @@
 <li><strong>Headless를 고려한 추상화</strong>를 통해 서버와 클라이언트가 동일한 로직 코드를 공유하게 하기</li>
 </ol>
 <p>이러한 구조는 추후 <strong>리플레이 시스템</strong>, <strong>네트워크 동기화</strong>, <strong>멀티 플랫폼 이식</strong> 시 발생할 수 있는 수많은 예외 상황을 사전에 차단해 준다</p>
+<hr>
 <h3 id="부록-이전에-쓴-게임-루프-Game-Loop-글을-Platform-관점에서-이해해보자"><a href="#부록-이전에-쓴-게임-루프-Game-Loop-글을-Platform-관점에서-이해해보자" class="headerlink" title="[부록]이전에 쓴 게임 루프 Game Loop  글을 Platform 관점에서 이해해보자"></a>[부록]이전에 쓴 <a target="_blank" rel="noopener" href="https://www.notion.so/Game-Loop-2e5f9ff2e8c280aabf7bc9669ca8d3cf?pvs=21">게임 루프 Game Loop</a>  글을 Platform 관점에서 이해해보자</h3><ol>
 <li><p><strong>GetRawTimeSeconds()</strong></p>
 <p> main Loop에 GetRawTimeSeconds()라는 함수가 있다.</p>
@@ -649,7 +665,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%EC%97%94%EC%A7%84%EC%9D%80-%EC%96%B8%EC%A0%9C-%EC%9E%85%EB%A0%A5-InputState-%EC%9D%84-%EC%95%8C%EC%95%84%EC%95%BC-%ED%95%A0%EA%B9%8C"><span class="nav-text">1. 엔진은 언제 입력(InputState)을 알아야 할까 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-PollEvents%EB%8A%94-%EC%A0%95%ED%99%95%ED%9E%88-%EB%AC%B4%EC%97%87%EC%9D%84-%ED%95%98%EB%8A%94%EA%B0%80"><span class="nav-text">2. PollEvents는 정확히 무엇을 하는가</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SwapBuffers%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80"><span class="nav-text">3. SwapBuffers는 무엇인가</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%EC%A0%95%EB%A6%AC%EB%A5%BC-%ED%95%B4%EB%B3%B4%EC%9E%90%EB%A9%B4"><span class="nav-text">4. 정리를 해보자면</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%EC%9D%B4-%EA%B5%AC%EC%A1%B0%EB%A1%9C-Headless-%EC%97%94%EC%A7%84-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-text">5. 이 구조로 Headless 엔진 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%EC%9D%B4-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EA%B2%8C%EC%9E%84-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-text">6. 이 구조로 게임 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%EA%B2%B0%EB%A1%A0-%EB%B0%8F-%EC%9A%94%EC%95%BD"><span class="nav-text">8. 결론 및 요약</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%B6%80%EB%A1%9D-%EC%9D%B4%EC%A0%84%EC%97%90-%EC%93%B4-%EA%B2%8C%EC%9E%84-%EB%A3%A8%ED%94%84-Game-Loop-%EA%B8%80%EC%9D%84-Platform-%EA%B4%80%EC%A0%90%EC%97%90%EC%84%9C-%EC%9D%B4%ED%95%B4%ED%95%B4%EB%B3%B4%EC%9E%90"><span class="nav-text">[부록]이전에 쓴 게임 루프 Game Loop  글을 Platform 관점에서 이해해보자</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%EC%97%94%EC%A7%84%EC%9D%80-%EC%96%B8%EC%A0%9C-%EC%9E%85%EB%A0%A5-InputState-%EC%9D%84-%EC%95%8C%EC%95%84%EC%95%BC-%ED%95%A0%EA%B9%8C"><span class="nav-text">1. 엔진은 언제 입력(InputState)을 알아야 할까 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-PollEvents%EB%8A%94-%EC%A0%95%ED%99%95%ED%9E%88-%EB%AC%B4%EC%97%87%EC%9D%84-%ED%95%A0%EA%B9%8C"><span class="nav-text">2. PollEvents는 정확히 무엇을 할까?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SwapBuffers%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80"><span class="nav-text">3. SwapBuffers는 무엇인가</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%EC%A0%95%EB%A6%AC%EB%A5%BC-%ED%95%B4%EB%B3%B4%EC%9E%90%EB%A9%B4"><span class="nav-text">4. 정리를 해보자면</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%EC%9D%B4-%EA%B5%AC%EC%A1%B0%EB%A1%9C-Headless-%EC%97%94%EC%A7%84-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-text">5. 이 구조로 Headless 엔진 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%EC%9D%B4-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EA%B2%8C%EC%9E%84-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-text">6. 이 구조로 게임 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%EA%B2%B0%EB%A1%A0-%EB%B0%8F-%EC%9A%94%EC%95%BD"><span class="nav-text">8. 결론 및 요약</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%B6%80%EB%A1%9D-%EC%9D%B4%EC%A0%84%EC%97%90-%EC%93%B4-%EA%B2%8C%EC%9E%84-%EB%A3%A8%ED%94%84-Game-Loop-%EA%B8%80%EC%9D%84-Platform-%EA%B4%80%EC%A0%90%EC%97%90%EC%84%9C-%EC%9D%B4%ED%95%B4%ED%95%B4%EB%B3%B4%EC%9E%90"><span class="nav-text">[부록]이전에 쓴 게임 루프 Game Loop  글을 Platform 관점에서 이해해보자</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
