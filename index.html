@@ -210,7 +210,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2026-02-05 01:53:40 / Modified: 15:36:12" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
+              <time title="Created: 2026-02-05 01:53:40 / Modified: 15:41:35" itemprop="dateCreated datePublished" datetime="2026-02-05T01:53:40+09:00">2026-02-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -521,46 +521,41 @@
 </ol>
 <p>이러한 구조는 추후 <strong>리플레이 시스템</strong>, <strong>네트워크 동기화</strong>, <strong>멀티 플랫폼 이식</strong> 시 발생할 수 있는 수많은 예외 상황을 사전에 차단해 준다</p>
 <h3 id="부록-이전에-쓴-게임-루프-Game-Loop-글을-Platform-관점에서-이해해보자"><a href="#부록-이전에-쓴-게임-루프-Game-Loop-글을-Platform-관점에서-이해해보자" class="headerlink" title="[부록]이전에 쓴 게임 루프 Game Loop  글을 Platform 관점에서 이해해보자"></a>[부록]이전에 쓴 <a target="_blank" rel="noopener" href="https://www.notion.so/Game-Loop-2e5f9ff2e8c280aabf7bc9669ca8d3cf?pvs=21">게임 루프 Game Loop</a>  글을 Platform 관점에서 이해해보자</h3><ol>
-<li><strong>GetRawTimeSeconds()</strong></li>
-</ol>
-<p>main Loop에 GetRawTimeSeconds()라는 함수가 있다.</p>
-<p>Platform 관점에서 Fixed Timestep Loop를 다시 보면 이건 platform에서 제공하는 것이다.</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">double</span> <span class="title">GetRawTimeSeconds</span>()</span></span><br></pre></td></tr></table></figure>
-
-<p>이 값은 그냥 <strong>OS 기준 단조 증가 시계값</strong>이다.</p>
-<p>frameTime은 Platform에서 보내지만 엔진에선 신뢰할 수는 없다.</p>
-<p>그래서 clamp를 추가한다.</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">double</span> frameTime = newTime - currentTime;</span><br><span class="line"><span class="keyword">if</span> (frameTime &gt; <span class="number">0.25</span>)</span><br><span class="line">    frameTime = <span class="number">0.25</span>;</span><br></pre></td></tr></table></figure>
-
-<p>이 클램프는 단순 방어코드가 아니다.</p>
+<li><p><strong>GetRawTimeSeconds()</strong></p>
+<p> main Loop에 GetRawTimeSeconds()라는 함수가 있다.</p>
+<p> Platform 관점에서 Fixed Timestep Loop를 다시 보면 이건 platform에서 제공하는 것이다.</p>
+ <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">double</span> <span class="title">GetRawTimeSeconds</span>()</span></span><br></pre></td></tr></table></figure>
+<p> 이 값은 그냥 <strong>OS 기준 단조 증가 시계값</strong>이다.</p>
+<p> frameTime은 Platform에서 보내지만 엔진에선 신뢰할 수는 없다.</p>
+<p> 그래서 clamp를 추가한다.</p>
+ <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">double</span> frameTime = newTime - currentTime;</span><br><span class="line"><span class="keyword">if</span> (frameTime &gt; <span class="number">0.25</span>)</span><br><span class="line">    frameTime = <span class="number">0.25</span>;</span><br></pre></td></tr></table></figure>
+<p> 이 클램프는 단순 방어코드가 아니다.</p>
 <ul>
 <li>OS 스케줄링</li>
 <li>디버거 중단</li>
 <li>창 포커스 이동</li>
 </ul>
-<p>이 모든 것은 <strong>Platform 레벨의 문제</strong>다.</p>
-<blockquote>
-<p>즉, Platform은 시간을 보내고,</p>
-<p>Engine은 그 시간을 <strong>신뢰할지 판단한다</strong>.</p>
-</blockquote>
-<ol start="2">
-<li><strong>입력은 fixed update에 종속되지 않는다</strong></li>
+<p> 이 모든 것은 <strong>Platform 레벨의 문제</strong>다.</p>
+<p> 즉, Platform은 시간을 보내고, Engine은 그 시간을 <strong>신뢰할지 판단한다</strong>.</p>
+</li>
+<li><p><strong>입력은 fixed update에 종속되지 않는다</strong></p>
+</li>
 </ol>
-<p>InputState는 프레임 시작에 한번</p>
-<p>물리 업데이트는 여러번 이루어진다.</p>
+<p>InputState는 프레임 시작에 한번, 물리 업데이트는 여러번 이루어진다.</p>
 <p>즉, <strong>하나의 InputState로 여러번의 물리 업데이트가 실행될 수 있다.</strong></p>
 <ol>
-<li>interpolation은 렌더링 문제이지 시뮬레이션 문제가 아니다.</li>
-</ol>
-<p>시뮬레이션은 항상 고정된 dt로 진행된다.</p>
-<p>interpolation은 렌더링을 부드럽게 보이기 위한 후처리이다.</p>
-<p>즉, 논리 업데이트 횟수가 변하는 것이 아니라 렌더링 시각화 보정만 하는것이다.</p>
-<p>이건 Platform의 SwapBuffers() 개념과도 정확하게 대응된다.</p>
+<li><p>interpolation은 렌더링 문제이지 시뮬레이션 문제가 아니다.</p>
+<p> 시뮬레이션은 항상 고정된 dt로 진행된다.</p>
+<p> interpolation은 렌더링을 부드럽게 보이기 위한 후처리이다.</p>
+<p> 즉, 논리 업데이트 횟수가 변하는 것이 아니라 렌더링 시각화 보정만 하는것이다.</p>
+<p> 이건 Platform의 SwapBuffers() 개념과도 정확하게 대응된다.</p>
 <ul>
 <li>InputState → 프레임 시작 고정</li>
 <li>SwapBuffers → 프레임 끝 확정</li>
 </ul>
-<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+</li>
+</ol>
+
       
     </div>
 
